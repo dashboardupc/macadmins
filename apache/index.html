@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Mac Admíns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        
+        .titulo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            height: 60px;
+            width: auto;
+        }
+
+        /* Estilos del slider */
+        .slider-container {
+            position: relative;
+            margin: 20px auto;
+            max-width: 100%;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .slide {
+            min-width: 100%;
+            position: relative;
+        }
+        
+        .slide img {
+            width: 100%;
+            height: auto;
+            vertical-align: middle;
+        }
+
+        .botones-slider {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+        
+        .btn-anterior, .btn-siguiente {
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+
+        .btn-anterior:hover, .btn-siguiente:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .botones-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .boton-copiar {
+            background-color: #32CD32;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .boton-copiar:hover {
+            background-color: #28a428;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-contenido {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .cerrar-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+        
+        .info-contacto {
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenido">
+        <div class="titulo-container">
+            <h1>¡Bienvenido a Mac Admíns!</h1>
+            <img src="images/logo.png" alt="Logo Munki World" class="logo">
+        </div>
+        
+        <p>Descubre el mundo mágico de Mac Admíns el centro de deployment para Mac en minutos.</p>
+
+        <!-- Slider -->
+        <div class="slider-container">
+            <div class="slider" id="slider">
+                <!-- Slides generados dinámicamente -->
+            </div>
+            <div class="botones-slider">
+                <button class="btn-anterior" onclick="cambiarSlide(-1)">❮</button>
+                <button class="btn-siguiente" onclick="cambiarSlide(1)">❯</button>
+            </div>
+        </div>
+
+        <h3>Botones de acción:</h3>
+        <div class="botones-container">
+            <button class="boton-copiar" onclick='copiarTexto("bash -c \"$(curl -fsSL http://apache/labs/intel)\"")'>Restaurar Mac Intel</button>
+            <button class="boton-copiar" onclick='copiarTexto("bash -c \"$(curl -fsSL http://apache/labs/silicon)\"")'>Restaurar Mac Silicon</button>
+            <button class="boton-copiar" onclick='copiarTexto("bash -c \"$(curl -fsSL http://apache/labs/restore)\"")'>Restaurar equipo en cero</button>
+            <button class="boton-copiar" onclick='copiarTexto("bash -c \"$(curl -fsSL http://apache/labs/revive)\"")'>Actualizar Mac</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>¿Tienes preguntas? <a href="#" onclick="mostrarModal()">Contáctanos</a></p>
+    </footer>
+
+    <!-- Modal de contacto -->
+    <div id="modalContacto" class="modal-overlay">
+        <div class="modal-contenido">
+            <button class="cerrar-modal" onclick="cerrarModal()">&times;</button>
+            <h3>Soporte Mac Admíns</h3>
+            <div class="info-contacto">
+                <p>Por e-mail:<br>
+                <strong>percy.salgado@upc.pe</strong></p>
+                
+                <p>Whatsapp:<br>
+                <strong>941 690 061</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Slider
+        const imagenes = ['images/im01.png', 'images/im02.png', 'images/im03.png'];
+        let slideActual = 0;
+        const slider = document.getElementById('slider');
+
+        imagenes.forEach((imagen, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'slide';
+            slide.innerHTML = `<img src="${imagen}" alt="Munki ${index + 1}">`;
+            slider.appendChild(slide);
+        });
+
+        function cambiarSlide(direccion) {
+            slideActual = (slideActual + direccion + imagenes.length) % imagenes.length;
+            slider.style.transform = `translateX(-${slideActual * 100}%)`;
+        }
+
+        setInterval(() => cambiarSlide(1), 7000);
+
+        // Copiar texto
+        function copiarTexto(texto) {
+            const tempInput = document.createElement("textarea");
+            tempInput.value = texto;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("Comando copiado. Cierra el Safari con ⌘-Q, pega el comando en Terminal y ejecútalo [⇧-⌘-T para abrir Terminal]");
+        }
+
+        // Modal
+        function mostrarModal() {
+            document.getElementById('modalContacto').style.display = 'block';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalContacto').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('modalContacto')) cerrarModal();
+        }
+    </script>
+</body>
+</html>
